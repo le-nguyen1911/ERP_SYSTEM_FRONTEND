@@ -1,10 +1,6 @@
+import { isValidElement } from 'react';
 
 
-/**
- * Enterprise Button Component
- * Variants: primary, secondary, danger, outline, ghost
- * Sizes: sm, md, lg
- */
 export function Button({
   children,
   type = 'button',
@@ -21,6 +17,40 @@ export function Button({
   const variantClass = `btn-${variant}`;
   const sizeClass = size !== 'md' ? `btn-${size}` : '';
 
+  const iconSize = size === 'sm' ? 14 : size === 'lg' ? 18 : 16;
+
+  /**
+   * Render icon safely.
+   *
+   * Supports:
+   * icon={RefreshCwIcon}
+   * icon={<RefreshCwIcon />}
+   */
+  const renderIcon = () => {
+    if (!Icon) {
+      return null;
+    }
+
+    // Case 1:
+    // icon={<RefreshCwIcon />}
+    if (isValidElement(Icon)) {
+      return Icon;
+    }
+
+    // Case 2:
+    // icon={RefreshCwIcon}
+    if (typeof Icon === 'function') {
+      return (
+        <Icon
+          size={iconSize}
+          className="btn-icon"
+        />
+      );
+    }
+
+    return null;
+  };
+
   return (
     <button
       type={type}
@@ -30,10 +60,14 @@ export function Button({
       {...props}
     >
       {isLoading ? (
-        <span className="spinner-inline" />
-      ) : Icon ? (
-        <Icon size={size === 'sm' ? 14 : 16} className="btn-icon" />
-      ) : null}
+        <span
+          className="spinner-inline"
+          aria-hidden="true"
+        />
+      ) : (
+        renderIcon()
+      )}
+
       <span>{children}</span>
     </button>
   );

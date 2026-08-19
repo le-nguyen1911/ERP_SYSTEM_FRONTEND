@@ -10,6 +10,7 @@ import {
   LayoutDashboardIcon,
   UsersIcon,
   PackageIcon,
+  TagIcon,
   WarehouseIcon,
   ShoppingCartIcon,
   TrendingUpIcon,
@@ -114,6 +115,13 @@ export function MainLayout() {
       title: 'QUẢN LÝ KHO & SẢN PHẨM',
       items: [
         {
+          label: 'Danh mục hàng hóa',
+          path: '/categories',
+          icon: TagIcon,
+          visible: hasPermission(PERMISSIONS.CATEGORY_VIEW),
+          badge: 'Phase 2',
+        },
+        {
           label: 'Danh mục sản phẩm',
           path: '/products',
           icon: PackageIcon,
@@ -172,6 +180,7 @@ export function MainLayout() {
   const breadcrumbNames = {
     dashboard: 'Bảng điều khiển',
     users: 'Người dùng',
+    categories: 'Danh mục hàng hóa',
     audit: 'Nhật ký Audit',
     products: 'Sản phẩm',
     inventory: 'Tồn kho',

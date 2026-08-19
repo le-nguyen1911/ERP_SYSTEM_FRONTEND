@@ -13,6 +13,8 @@ import { RegisterPage } from '../pages/auth/RegisterPage';
 import { ActiveSessionsPage } from '../pages/auth/ActiveSessionsPage';
 import { ProfilePage } from '../pages/profile/ProfilePage';
 import { DashboardPage } from '../pages/dashboard/DashboardPage';
+import { UserManagementPage } from '../pages/users/UserManagementPage';
+import { CategoryManagementPage } from '../pages/categories/CategoryManagementPage';
 import { PlaceholderPage } from '../pages/common/PlaceholderPage';
 import { ForbiddenPage } from '../pages/errors/ForbiddenPage';
 import { NotFoundPage } from '../pages/errors/NotFoundPage';
@@ -36,17 +38,22 @@ export function AppRoutes() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/sessions" element={<ActiveSessionsPage />} />
 
-          {/* RBAC Protected Module Placeholders for Upcoming Phases */}
+          {/* User Management & RBAC Module (Phase 2) */}
           <Route
             path="/users"
             element={
               <PermissionRoute requiredPermission={PERMISSIONS.USER_VIEW}>
-                <PlaceholderPage
-                  title="Quản lý Người dùng & RBAC"
-                  phase="Phase 2"
-                  description="Module quản lý danh sách tài khoản, khóa/mở khóa tài khoản, phân quyền vai trò và ma trận quyền hạn chi tiết."
-                  requiredPermissions={[PERMISSIONS.USER_VIEW, PERMISSIONS.USER_CREATE, PERMISSIONS.USER_UPDATE, PERMISSIONS.USER_DELETE]}
-                />
+                <UserManagementPage />
+              </PermissionRoute>
+            }
+          />
+
+          {/* Category Management Module (Phase 2) */}
+          <Route
+            path="/categories"
+            element={
+              <PermissionRoute requiredPermission={PERMISSIONS.CATEGORY_VIEW}>
+                <CategoryManagementPage />
               </PermissionRoute>
             }
           />
