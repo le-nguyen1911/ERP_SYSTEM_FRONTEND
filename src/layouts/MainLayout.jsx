@@ -138,6 +138,13 @@ export function MainLayout() {
           badge: 'Phase 2',
         },
         {
+          label: 'Quản lý kho',
+          path: '/warehouses',
+          icon: WarehouseIcon,
+          visible: hasPermission(PERMISSIONS.WAREHOUSE_VIEW),
+          badge: 'Phase 2',
+        },
+        {
           label: 'Danh mục sản phẩm',
           path: '/products',
           icon: PackageIcon,
@@ -199,6 +206,7 @@ export function MainLayout() {
     roles: 'Vai trò & Phân quyền',
     categories: 'Danh mục hàng hóa',
     units: 'Đơn vị tính',
+    warehouses: 'Quản lý kho',
     audit: 'Nhật ký Audit',
     products: 'Sản phẩm',
     inventory: 'Tồn kho',

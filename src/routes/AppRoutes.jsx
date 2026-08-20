@@ -17,6 +17,8 @@ import { UserManagementPage } from '../pages/users/UserManagementPage';
 import { RoleManagementPage } from '../pages/roles/RoleManagementPage';
 import { CategoryManagementPage } from '../pages/categories/CategoryManagementPage';
 import { UnitManagementPage } from '../pages/units/UnitManagementPage';
+import { WarehouseManagementPage } from '../pages/warehouses/WarehouseManagementPage';
+import { ProductManagementPage } from '../pages/products/ProductManagementPage';
 import { PlaceholderPage } from '../pages/common/PlaceholderPage';
 import { ForbiddenPage } from '../pages/errors/ForbiddenPage';
 import { NotFoundPage } from '../pages/errors/NotFoundPage';
@@ -80,6 +82,16 @@ export function AppRoutes() {
             }
           />
 
+          {/* Warehouse Management Module (Phase 2) */}
+          <Route
+            path="/warehouses"
+            element={
+              <PermissionRoute requiredPermission={PERMISSIONS.WAREHOUSE_VIEW}>
+                <WarehouseManagementPage />
+              </PermissionRoute>
+            }
+          />
+
           <Route
             path="/audit"
             element={
@@ -94,16 +106,12 @@ export function AppRoutes() {
             }
           />
 
+          {/* Product Catalog Management Module (Phase 2) */}
           <Route
             path="/products"
             element={
               <PermissionRoute requiredPermission={PERMISSIONS.PRODUCT_VIEW}>
-                <PlaceholderPage
-                  title="Danh mục Sản phẩm"
-                  phase="Phase 2"
-                  description="Quản lý danh mục hàng hóa, đơn vị tính, mã SKU, giá bán và trạng thái kích hoạt."
-                  requiredPermissions={[PERMISSIONS.PRODUCT_VIEW, PERMISSIONS.PRODUCT_CREATE, PERMISSIONS.PRODUCT_UPDATE]}
-                />
+                <ProductManagementPage />
               </PermissionRoute>
             }
           />
