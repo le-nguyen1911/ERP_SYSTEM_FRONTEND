@@ -1,6 +1,5 @@
 import { isValidElement } from 'react';
 
-
 export function Button({
   children,
   type = 'button',
@@ -10,6 +9,7 @@ export function Button({
   disabled = false,
   className = '',
   icon: Icon,
+  startIcon,
   onClick,
   ...props
 }) {
@@ -19,26 +19,33 @@ export function Button({
 
   const iconSize = size === 'sm' ? 14 : size === 'lg' ? 18 : 16;
 
-  /**
-   * Render icon safely.
-   *
-   * Supports:
-   * icon={RefreshCwIcon}
-   * icon={<RefreshCwIcon />}
-   */
   const renderIcon = () => {
+    // startIcon được ưu tiên
+    if (startIcon) {
+      if (isValidElement(startIcon)) {
+        return startIcon;
+      }
+
+      if (typeof startIcon === 'function') {
+        const StartIcon = startIcon;
+
+        return (
+          <StartIcon
+            size={iconSize}
+            className="btn-icon"
+          />
+        );
+      }
+    }
+
     if (!Icon) {
       return null;
     }
 
-    // Case 1:
-    // icon={<RefreshCwIcon />}
     if (isValidElement(Icon)) {
       return Icon;
     }
 
-    // Case 2:
-    // icon={RefreshCwIcon}
     if (typeof Icon === 'function') {
       return (
         <Icon

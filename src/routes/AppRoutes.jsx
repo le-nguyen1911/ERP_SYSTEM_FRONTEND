@@ -14,7 +14,9 @@ import { ActiveSessionsPage } from '../pages/auth/ActiveSessionsPage';
 import { ProfilePage } from '../pages/profile/ProfilePage';
 import { DashboardPage } from '../pages/dashboard/DashboardPage';
 import { UserManagementPage } from '../pages/users/UserManagementPage';
+import { RoleManagementPage } from '../pages/roles/RoleManagementPage';
 import { CategoryManagementPage } from '../pages/categories/CategoryManagementPage';
+import { UnitManagementPage } from '../pages/units/UnitManagementPage';
 import { PlaceholderPage } from '../pages/common/PlaceholderPage';
 import { ForbiddenPage } from '../pages/errors/ForbiddenPage';
 import { NotFoundPage } from '../pages/errors/NotFoundPage';
@@ -48,12 +50,32 @@ export function AppRoutes() {
             }
           />
 
+          {/* Role & Permission Management Module */}
+          <Route
+            path="/roles"
+            element={
+              <PermissionRoute requiredRole={ROLES.ADMIN}>
+                <RoleManagementPage />
+              </PermissionRoute>
+            }
+          />
+
           {/* Category Management Module (Phase 2) */}
           <Route
             path="/categories"
             element={
               <PermissionRoute requiredPermission={PERMISSIONS.CATEGORY_VIEW}>
                 <CategoryManagementPage />
+              </PermissionRoute>
+            }
+          />
+
+          {/* Unit Management Module (Phase 2) */}
+          <Route
+            path="/units"
+            element={
+              <PermissionRoute requiredPermission={PERMISSIONS.UNIT_VIEW}>
+                <UnitManagementPage />
               </PermissionRoute>
             }
           />

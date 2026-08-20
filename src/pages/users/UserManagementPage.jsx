@@ -259,7 +259,7 @@ export function UserManagementPage() {
       {/* Toolbar (Search & Filter) */}
       <div className="table-toolbar">
         <div className="table-toolbar-left">
-          <div className="table-search-input">
+          <div className="table-search-input" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <input
               type="text"
               className="form-input has-icon-left"

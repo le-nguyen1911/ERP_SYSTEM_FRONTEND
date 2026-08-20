@@ -7,10 +7,12 @@ import { toast } from '../stores/useToastStore';
 import { PERMISSIONS, ROLES } from '../utils/constants';
 import {
   ShieldIcon,
+  ShieldCheckIcon,
   LayoutDashboardIcon,
   UsersIcon,
   PackageIcon,
   TagIcon,
+  ScaleIcon,
   WarehouseIcon,
   ShoppingCartIcon,
   TrendingUpIcon,
@@ -96,11 +98,18 @@ export function MainLayout() {
       title: 'QUẢN TRỊ HỆ THỐNG',
       items: [
         {
-          label: 'Người dùng & Phân quyền',
+          label: 'Người dùng',
           path: '/users',
           icon: UsersIcon,
           visible: hasPermission(PERMISSIONS.USER_VIEW),
           badge: 'Phase 2',
+        },
+        {
+          label: 'Vai trò & Phân quyền',
+          path: '/roles',
+          icon: ShieldCheckIcon,
+          visible: hasRole(ROLES.ADMIN),
+          badge: 'Admin',
         },
         {
           label: 'Nhật ký Audit',
@@ -119,6 +128,13 @@ export function MainLayout() {
           path: '/categories',
           icon: TagIcon,
           visible: hasPermission(PERMISSIONS.CATEGORY_VIEW),
+          badge: 'Phase 2',
+        },
+        {
+          label: 'Đơn vị tính',
+          path: '/units',
+          icon: ScaleIcon,
+          visible: hasPermission(PERMISSIONS.UNIT_VIEW),
           badge: 'Phase 2',
         },
         {
@@ -180,7 +196,9 @@ export function MainLayout() {
   const breadcrumbNames = {
     dashboard: 'Bảng điều khiển',
     users: 'Người dùng',
+    roles: 'Vai trò & Phân quyền',
     categories: 'Danh mục hàng hóa',
+    units: 'Đơn vị tính',
     audit: 'Nhật ký Audit',
     products: 'Sản phẩm',
     inventory: 'Tồn kho',
