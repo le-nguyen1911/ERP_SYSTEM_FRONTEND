@@ -20,6 +20,7 @@ import { UnitManagementPage } from '../pages/units/UnitManagementPage';
 import { WarehouseManagementPage } from '../pages/warehouses/WarehouseManagementPage';
 import { ProductManagementPage } from '../pages/products/ProductManagementPage';
 import { InventoryManagementPage } from '../pages/inventory/InventoryManagementPage';
+import { SupplierManagementPage } from '../pages/suppliers/SupplierManagementPage';
 import { PlaceholderPage } from '../pages/common/PlaceholderPage';
 import { ForbiddenPage } from '../pages/errors/ForbiddenPage';
 import { NotFoundPage } from '../pages/errors/NotFoundPage';
@@ -122,6 +123,15 @@ export function AppRoutes() {
             element={
               <PermissionRoute requiredPermission={PERMISSIONS.STOCK_VIEW}>
                 <InventoryManagementPage />
+              </PermissionRoute>
+            }
+          />
+
+          <Route
+            path="/suppliers"
+            element={
+              <PermissionRoute requiredPermission={PERMISSIONS.SUPPLIER_VIEW}>
+                <SupplierManagementPage />
               </PermissionRoute>
             }
           />

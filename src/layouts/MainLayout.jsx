@@ -14,6 +14,7 @@ import {
   TagIcon,
   ScaleIcon,
   WarehouseIcon,
+  TruckIcon,
   ShoppingCartIcon,
   TrendingUpIcon,
   BellIcon,
@@ -163,6 +164,13 @@ export function MainLayout() {
     {
       title: 'CHUỖI CUNG ỨNG',
       items: [
+        {
+          label: 'Nhà cung cấp',
+          path: '/suppliers',
+          icon: TruckIcon,
+          visible: hasPermission(PERMISSIONS.SUPPLIER_VIEW),
+          badge: 'Phase 4',
+        },
         {
           label: 'Mua hàng (PO & GR)',
           path: '/purchase',
