@@ -19,6 +19,7 @@ import { CategoryManagementPage } from '../pages/categories/CategoryManagementPa
 import { UnitManagementPage } from '../pages/units/UnitManagementPage';
 import { WarehouseManagementPage } from '../pages/warehouses/WarehouseManagementPage';
 import { ProductManagementPage } from '../pages/products/ProductManagementPage';
+import { InventoryManagementPage } from '../pages/inventory/InventoryManagementPage';
 import { PlaceholderPage } from '../pages/common/PlaceholderPage';
 import { ForbiddenPage } from '../pages/errors/ForbiddenPage';
 import { NotFoundPage } from '../pages/errors/NotFoundPage';
@@ -120,12 +121,7 @@ export function AppRoutes() {
             path="/inventory"
             element={
               <PermissionRoute requiredPermission={PERMISSIONS.STOCK_VIEW}>
-                <PlaceholderPage
-                  title="Quản lý Tồn kho & Điều chuyển"
-                  phase="Phase 3"
-                  description="Theo dõi số lượng tồn theo kho vật lý, cảnh báo tồn kho tối thiểu, điều chuyển giữa các kho và lịch sử giao dịch thẻ kho."
-                  requiredPermissions={[PERMISSIONS.STOCK_VIEW, PERMISSIONS.STOCK_IMPORT, PERMISSIONS.STOCK_EXPORT, PERMISSIONS.STOCK_TRANSFER]}
-                />
+                <InventoryManagementPage />
               </PermissionRoute>
             }
           />
