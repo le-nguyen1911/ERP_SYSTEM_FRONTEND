@@ -22,6 +22,7 @@ import { ProductManagementPage } from '../pages/products/ProductManagementPage';
 import { InventoryManagementPage } from '../pages/inventory/InventoryManagementPage';
 import { SupplierManagementPage } from '../pages/suppliers/SupplierManagementPage';
 import { PurchaseOrderManagementPage } from '../pages/purchase-orders/PurchaseOrderManagementPage';
+import { GoodsReceiptManagementPage } from '../pages/goods-receipts/GoodsReceiptManagementPage';
 import { PlaceholderPage } from '../pages/common/PlaceholderPage';
 import { ForbiddenPage } from '../pages/errors/ForbiddenPage';
 import { NotFoundPage } from '../pages/errors/NotFoundPage';
@@ -144,6 +145,17 @@ export function AppRoutes() {
                 requiredPermissions={[PERMISSIONS.PURCHASE_UPDATE, PERMISSIONS.PURCHASE_APPROVE, PERMISSIONS.PURCHASE_CREATE]}
               >
                 <PurchaseOrderManagementPage />
+              </PermissionRoute>
+            }
+          />
+
+          <Route
+            path="/goods-receipts"
+            element={
+              <PermissionRoute
+                requiredPermissions={[PERMISSIONS.GOODS_RECEIPT_VIEW, PERMISSIONS.GOODS_RECEIPT_CREATE]}
+              >
+                <GoodsReceiptManagementPage />
               </PermissionRoute>
             }
           />

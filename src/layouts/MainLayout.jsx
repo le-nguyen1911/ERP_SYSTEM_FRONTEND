@@ -16,6 +16,7 @@ import {
   WarehouseIcon,
   TruckIcon,
   ShoppingCartIcon,
+  InboxIcon,
   TrendingUpIcon,
   BellIcon,
   FileTextIcon,
@@ -176,6 +177,12 @@ export function MainLayout() {
           path: '/purchase',
           icon: ShoppingCartIcon,
           visible: hasPermission(PERMISSIONS.PURCHASE_UPDATE) || hasPermission(PERMISSIONS.PURCHASE_APPROVE) || hasPermission(PERMISSIONS.PURCHASE_CREATE),
+        },
+        {
+          label: 'Nhận hàng (GR)',
+          path: '/goods-receipts',
+          icon: InboxIcon,
+          visible: hasPermission(PERMISSIONS.GOODS_RECEIPT_VIEW) || hasPermission(PERMISSIONS.GOODS_RECEIPT_CREATE),
         },
         {
           label: 'Bán hàng & Giao hàng',
