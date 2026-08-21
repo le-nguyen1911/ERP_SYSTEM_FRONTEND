@@ -21,6 +21,7 @@ import { WarehouseManagementPage } from '../pages/warehouses/WarehouseManagement
 import { ProductManagementPage } from '../pages/products/ProductManagementPage';
 import { InventoryManagementPage } from '../pages/inventory/InventoryManagementPage';
 import { SupplierManagementPage } from '../pages/suppliers/SupplierManagementPage';
+import { PurchaseOrderManagementPage } from '../pages/purchase-orders/PurchaseOrderManagementPage';
 import { PlaceholderPage } from '../pages/common/PlaceholderPage';
 import { ForbiddenPage } from '../pages/errors/ForbiddenPage';
 import { NotFoundPage } from '../pages/errors/NotFoundPage';
@@ -142,12 +143,7 @@ export function AppRoutes() {
               <PermissionRoute
                 requiredPermissions={[PERMISSIONS.PURCHASE_UPDATE, PERMISSIONS.PURCHASE_APPROVE, PERMISSIONS.PURCHASE_CREATE]}
               >
-                <PlaceholderPage
-                  title="Quy trình Mua hàng (Purchase Order & Goods Receipt)"
-                  phase="Phase 4"
-                  description="Quản lý Nhà cung cấp, Đơn mua hàng PO đa trạng thái và Phiếu nhận hàng GR kèm quy trình kiểm tra chất lượng (QC)."
-                  requiredPermissions={[PERMISSIONS.PURCHASE_CREATE, PERMISSIONS.PURCHASE_APPROVE, PERMISSIONS.GOODS_RECEIPT_CREATE]}
-                />
+                <PurchaseOrderManagementPage />
               </PermissionRoute>
             }
           />

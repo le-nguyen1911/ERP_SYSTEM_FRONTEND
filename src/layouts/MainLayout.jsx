@@ -172,11 +172,10 @@ export function MainLayout() {
           badge: 'Phase 4',
         },
         {
-          label: 'Mua hàng (PO & GR)',
+          label: 'Đơn mua hàng (PO)',
           path: '/purchase',
           icon: ShoppingCartIcon,
-          visible: hasPermission(PERMISSIONS.PURCHASE_UPDATE) || hasPermission(PERMISSIONS.PURCHASE_APPROVE),
-          badge: 'Phase 4',
+          visible: hasPermission(PERMISSIONS.PURCHASE_UPDATE) || hasPermission(PERMISSIONS.PURCHASE_APPROVE) || hasPermission(PERMISSIONS.PURCHASE_CREATE),
         },
         {
           label: 'Bán hàng & Giao hàng',
