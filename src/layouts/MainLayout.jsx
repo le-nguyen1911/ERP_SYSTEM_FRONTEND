@@ -185,6 +185,13 @@ export function MainLayout() {
           visible: hasPermission(PERMISSIONS.GOODS_RECEIPT_VIEW) || hasPermission(PERMISSIONS.GOODS_RECEIPT_CREATE),
         },
         {
+          label: 'Khách hàng',
+          path: '/customers',
+          icon: UsersIcon,
+          visible: hasPermission(PERMISSIONS.CUSTOMER_VIEW),
+          badge: 'Phase 5',
+        },
+        {
           label: 'Bán hàng & Giao hàng',
           path: '/sales',
           icon: TrendingUpIcon,
@@ -225,6 +232,8 @@ export function MainLayout() {
     products: 'Sản phẩm',
     inventory: 'Tồn kho',
     purchase: 'Mua hàng',
+    'goods-receipts': 'Nhận hàng (GR)',
+    customers: 'Khách hàng',
     sales: 'Bán hàng',
     notifications: 'Thông báo',
     profile: 'Hồ sơ tài khoản',

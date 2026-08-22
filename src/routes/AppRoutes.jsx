@@ -23,6 +23,8 @@ import { InventoryManagementPage } from '../pages/inventory/InventoryManagementP
 import { SupplierManagementPage } from '../pages/suppliers/SupplierManagementPage';
 import { PurchaseOrderManagementPage } from '../pages/purchase-orders/PurchaseOrderManagementPage';
 import { GoodsReceiptManagementPage } from '../pages/goods-receipts/GoodsReceiptManagementPage';
+import { CustomerManagementPage } from '../pages/customers/CustomerManagementPage';
+import { AuditLogPage } from '../pages/audit/AuditLogPage';
 import { PlaceholderPage } from '../pages/common/PlaceholderPage';
 import { ForbiddenPage } from '../pages/errors/ForbiddenPage';
 import { NotFoundPage } from '../pages/errors/NotFoundPage';
@@ -100,12 +102,7 @@ export function AppRoutes() {
             path="/audit"
             element={
               <PermissionRoute requiredRole={ROLES.ADMIN}>
-                <PlaceholderPage
-                  title="Nhật ký Hệ thống (Audit Log)"
-                  phase="Phase 6"
-                  description="Truy vết chi tiết mọi thay đổi dữ liệu (old_value và new_value dạng JSONB), phục vụ kiểm toán và giám sát hệ thống."
-                  requiredPermissions={['ROLE_ADMIN']}
-                />
+                <AuditLogPage />
               </PermissionRoute>
             }
           />
@@ -156,6 +153,15 @@ export function AppRoutes() {
                 requiredPermissions={[PERMISSIONS.GOODS_RECEIPT_VIEW, PERMISSIONS.GOODS_RECEIPT_CREATE]}
               >
                 <GoodsReceiptManagementPage />
+              </PermissionRoute>
+            }
+          />
+
+          <Route
+            path="/customers"
+            element={
+              <PermissionRoute requiredPermission={PERMISSIONS.CUSTOMER_VIEW}>
+                <CustomerManagementPage />
               </PermissionRoute>
             }
           />
