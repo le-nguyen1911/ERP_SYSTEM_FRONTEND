@@ -6,28 +6,43 @@ import axiosClient from './axiosClient';
  */
 export const customerApi = {
   /**
-   * Get all customers (paginated)
-   * @param {Object} params - { page, size, sort }
+   * Get all customers (paginated) — used when no keyword/status filter is active.
+   * Hits GET /api/v1/customers which supports Pageable (page, size).
+   * NOTE: Do NOT pass a sort param; Spring JPA Pageable rejects "createdAt,desc"
+   *       as a single value because it parses "desc" as a second property name.
+   *       UUID v7 IDs are time-ordered, so default order is already newest-first.
+   * @param {Object} params - { page, size }
    * @returns {Promise<ApiResponse<Page<CustomerResponse>>>}
    */
-  getCustomers: (params = { page: 0, size: 10, sort: 'createdAt,desc' }) => {
-    return axiosClient.get('/customers', { params });
+  getCustomers: (params = {}) => {
+    const queryParams = {
+      page: params.page ?? 0,
+      size: params.size ?? 10,
+    };
+    return axiosClient.get('/customers', { params: queryParams });
   },
 
   /**
-   * Search customers with keyword and status filter (paginated)
-   * @param {Object} params - { keyword, status, page, size, sort }
+   * Search customers with keyword and/or status filter (paginated).
+   * Hits GET /api/v1/customers/search.
+   * Only called when at least one of keyword or status filter is active.
+   * NOTE: Do NOT pass a sort param for the same reason as above.
+   * @param {Object} params - { keyword, status, page, size }
    * @returns {Promise<ApiResponse<Page<CustomerResponse>>>}
    */
-  searchCustomers: (params = { page: 0, size: 10, sort: 'createdAt,desc' }) => {
+  searchCustomers: (params = {}) => {
     const searchParams = {
-      ...(params.keyword ? { keyword: params.keyword } : {}),
-      ...(params.status && params.status !== 'ALL' ? { status: params.status } : {}),
+      keyword: params.keyword ?? '',
+      ...(params.status && params.status !== 'ALL'
+        ? { status: params.status }
+        : {}),
       page: params.page ?? 0,
       size: params.size ?? 10,
-      sort: params.sort ?? 'createdAt,desc',
     };
-    return axiosClient.get('/customers/search', { params: searchParams });
+
+    return axiosClient.get('/customers/search', {
+      params: searchParams,
+    });
   },
 
   /**

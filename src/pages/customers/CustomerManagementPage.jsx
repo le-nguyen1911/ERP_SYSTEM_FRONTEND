@@ -53,6 +53,10 @@ export function CustomerManagementPage() {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   // 2. Fetch Customer List Query
+  // Route: use GET /api/v1/customers for ALL (no filters), GET /api/v1/customers/search otherwise.
+  // NOTE: Do NOT pass sort=createdAt,desc — Spring JPA Pageable parses the comma-separated value
+  //       and treats "desc" as a second sort property name, causing 400 Bad Request.
+  const hasFilter = !!activeSearch || statusFilter !== 'ALL';
   const {
     data: customerApiResponse,
     isLoading,
@@ -63,13 +67,14 @@ export function CustomerManagementPage() {
   } = useQuery({
     queryKey: ['customers', statusFilter, activeSearch, page, pageSize],
     queryFn: () =>
-      customerApi.searchCustomers({
-        keyword: activeSearch || undefined,
-        status: statusFilter !== 'ALL' ? statusFilter : undefined,
-        page,
-        size: pageSize,
-        sort: 'createdAt,desc',
-      }),
+      hasFilter
+        ? customerApi.searchCustomers({
+            keyword: activeSearch || undefined,
+            status: statusFilter !== 'ALL' ? statusFilter : undefined,
+            page,
+            size: pageSize,
+          })
+        : customerApi.getCustomers({ page, size: pageSize }),
   });
 
   const pageData = customerApiResponse?.data;
