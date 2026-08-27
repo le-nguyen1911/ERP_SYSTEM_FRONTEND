@@ -26,6 +26,8 @@ import { GoodsReceiptManagementPage } from '../pages/goods-receipts/GoodsReceipt
 import { CustomerManagementPage } from '../pages/customers/CustomerManagementPage';
 import { AuditLogPage } from '../pages/audit/AuditLogPage';
 import { PlaceholderPage } from '../pages/common/PlaceholderPage';
+import { SalesOrderManagementPage } from '../pages/sales-orders/SalesOrderManagementPage';
+import { DeliveryManagementPage } from '../pages/deliveries/DeliveryManagementPage';
 import { ForbiddenPage } from '../pages/errors/ForbiddenPage';
 import { NotFoundPage } from '../pages/errors/NotFoundPage';
 
@@ -170,12 +172,16 @@ export function AppRoutes() {
             path="/sales"
             element={
               <PermissionRoute requiredPermission={PERMISSIONS.SALES_VIEW}>
-                <PlaceholderPage
-                  title="Quy trình Bán hàng (Sales Order & Delivery)"
-                  phase="Phase 5"
-                  description="Quản lý Khách hàng, Đơn bán hàng SO, xác nhận giao hàng và tự động xuất kho theo đơn hàng."
-                  requiredPermissions={[PERMISSIONS.SALES_VIEW, PERMISSIONS.SALES_CREATE, PERMISSIONS.DELIVERY_CREATE]}
-                />
+                <SalesOrderManagementPage />
+              </PermissionRoute>
+            }
+          />
+
+          <Route
+            path="/deliveries"
+            element={
+              <PermissionRoute requiredPermission={PERMISSIONS.DELIVERY_VIEW}>
+                <DeliveryManagementPage />
               </PermissionRoute>
             }
           />
