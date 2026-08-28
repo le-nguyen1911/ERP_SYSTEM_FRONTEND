@@ -25,9 +25,9 @@ import { PurchaseOrderManagementPage } from '../pages/purchase-orders/PurchaseOr
 import { GoodsReceiptManagementPage } from '../pages/goods-receipts/GoodsReceiptManagementPage';
 import { CustomerManagementPage } from '../pages/customers/CustomerManagementPage';
 import { AuditLogPage } from '../pages/audit/AuditLogPage';
-import { PlaceholderPage } from '../pages/common/PlaceholderPage';
 import { SalesOrderManagementPage } from '../pages/sales-orders/SalesOrderManagementPage';
 import { DeliveryManagementPage } from '../pages/deliveries/DeliveryManagementPage';
+import { NotificationManagementPage } from '../pages/notifications/NotificationManagementPage';
 import { ForbiddenPage } from '../pages/errors/ForbiddenPage';
 import { NotFoundPage } from '../pages/errors/NotFoundPage';
 
@@ -188,13 +188,7 @@ export function AppRoutes() {
 
           <Route
             path="/notifications"
-            element={
-              <PlaceholderPage
-                title="Trung tâm Thông báo"
-                phase="Phase 6"
-                description="Nhận thông báo tự động từ sự kiện duyệt đơn mua hàng, duyệt đơn bán hàng, cảnh báo tồn kho thấp và lỗi xuất nhập kho."
-              />
-            }
+            element={<NotificationManagementPage />}
           />
         </Route>
       </Route>

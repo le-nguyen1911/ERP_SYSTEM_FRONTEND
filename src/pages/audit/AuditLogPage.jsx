@@ -176,10 +176,10 @@ export function AuditLogPage() {
             {[
               { id: 'ALL', label: 'Tất cả' },
               { id: 'PURCHASE', label: 'Mua hàng (PO/GR)' },
-              { id: 'INVENTORY', label: 'Tồn kho (Stock)' },
-              { id: 'AUTH', label: 'Xác thực (Auth)' },
-              { id: 'USER', label: 'Người dùng (User)' },
               { id: 'SALES', label: 'Bán hàng (Sales)' },
+              { id: 'INVENTORY', label: 'Tồn kho (Stock)' },
+              { id: 'AUTH', label: 'Xác thực & Người dùng (Auth)' },
+              { id: 'SYSTEM', label: 'Hệ thống (System)' },
             ].map((tab) => (
               <button
                 key={tab.id}

@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect, Fragment } from 'react';
 import { Outlet, NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../stores/useAuthStore';
 import { usePermission } from '../hooks/usePermission';
 import { authApi } from '../api/authApi';
+import { notificationApi } from '../api/notificationApi';
 import { toast } from '../stores/useToastStore';
 import { PERMISSIONS, ROLES } from '../utils/constants';
 import {
@@ -42,6 +44,15 @@ export function MainLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+
+  // Real-time unread notification count
+  const { data: unreadCountRes } = useQuery({
+    queryKey: ['notifications-unread-count'],
+    queryFn: () => notificationApi.getUnreadCount(),
+    enabled: !!user,
+    refetchInterval: 30000,
+  });
+  const unreadCount = unreadCountRes?.data?.count ?? unreadCountRes?.data?.unreadCount ?? 0;
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -209,6 +220,13 @@ export function MainLayout() {
     {
       title: 'CÁ NHÂN',
       items: [
+        {
+          label: 'Thông báo',
+          path: '/notifications',
+          icon: BellIcon,
+          visible: true,
+          badge: unreadCount > 0 ? String(unreadCount) : undefined,
+        },
         {
           label: 'Hồ sơ & Đổi mật khẩu',
           path: '/profile',
@@ -405,10 +423,37 @@ export function MainLayout() {
           </div>
 
           <div className="header-right">
-            {/* Notification placeholder */}
-            <Link to="/notifications" className="header-icon-btn" title="Thông báo">
+            {/* Notification Icon & Badge */}
+            <Link
+              to="/notifications"
+              className="header-icon-btn"
+              title={unreadCount > 0 ? `Thông báo (${unreadCount} chưa đọc)` : 'Thông báo'}
+              style={{ position: 'relative' }}
+            >
               <BellIcon size={18} />
-              <span className="notification-dot" />
+              {unreadCount > 0 && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: 2,
+                    right: 2,
+                    minWidth: 16,
+                    height: 16,
+                    borderRadius: 8,
+                    backgroundColor: '#ef4444',
+                    color: '#ffffff',
+                    fontSize: 10,
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0 4px',
+                    lineHeight: 1,
+                  }}
+                >
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </Link>
 
             {/* User Profile Dropdown */}
