@@ -253,14 +253,25 @@ export function DeliveryManagementPage() {
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ flex: '1 1 260px' }}>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>TÌM KIẾM</label>
-            <div style={{ position: 'relative' }}>
-              <SearchIcon size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+            <div style={{ position: 'relative', width: '100%' }}>
+              <span
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  top: 11,
+                  color: 'var(--color-text-muted)',
+                  pointerEvents: 'none',
+                }}
+              >
+                <SearchIcon size={16} />
+              </span>
               <input
                 type="text"
+                className="form-input"
+                style={{ paddingLeft: 36, height: 38 }}
                 placeholder="Mã phiếu, số đơn SO, khách hàng..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px 8px 32px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 14, boxSizing: 'border-box' }}
               />
             </div>
           </div>

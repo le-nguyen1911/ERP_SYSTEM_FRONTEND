@@ -302,26 +302,27 @@ export function ProductManagementPage() {
       {/* Toolbar & Filters */}
       <div className="table-toolbar">
         <div className="table-toolbar-left" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-          <div className="table-search-input" style={{ minWidth: 260 }}>
+          <div style={{ position: 'relative', width: '100%', minWidth: 260 }}>
+            <span
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: 11,
+                color: 'var(--color-text-muted)',
+                pointerEvents: 'none',
+              }}
+            >
+              <SearchIcon size={16} />
+            </span>
             <input
               type="text"
-              className="form-input has-icon-left"
+              className="form-input"
+              style={{ paddingLeft: 36, height: 38 }}
               placeholder="Tìm theo mã SKU, tên sản phẩm..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
                 setPage(0);
-              }}
-            />
-            <SearchIcon
-              size={16}
-              style={{
-                position: 'absolute',
-                left: 12,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--color-text-muted)',
-                pointerEvents: 'none',
               }}
             />
           </div>

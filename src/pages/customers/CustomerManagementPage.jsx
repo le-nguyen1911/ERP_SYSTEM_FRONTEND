@@ -69,11 +69,11 @@ export function CustomerManagementPage() {
     queryFn: () =>
       hasFilter
         ? customerApi.searchCustomers({
-            keyword: activeSearch || undefined,
-            status: statusFilter !== 'ALL' ? statusFilter : undefined,
-            page,
-            size: pageSize,
-          })
+          keyword: activeSearch || undefined,
+          status: statusFilter !== 'ALL' ? statusFilter : undefined,
+          page,
+          size: pageSize,
+        })
         : customerApi.getCustomers({ page, size: pageSize }),
   });
 
@@ -290,24 +290,27 @@ export function CustomerManagementPage() {
       <div className="table-toolbar">
         <div className="table-toolbar-left" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
           <form onSubmit={handleSearchSubmit} className="table-search-input" style={{ minWidth: 280 }}>
-            <input
-              type="text"
-              className="form-input has-icon-left"
-              placeholder="Tìm theo mã, tên KH, SĐT, email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <SearchIcon
-              size={16}
-              style={{
-                position: 'absolute',
-                left: 12,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--color-text-muted)',
-                pointerEvents: 'none',
-              }}
-            />
+            <div style={{ position: 'relative', width: '100%' }}>
+              <span
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  top: 11,
+                  color: 'var(--color-text-muted)',
+                  pointerEvents: 'none',
+                }}
+              >
+                <SearchIcon size={16} />
+              </span>
+              <input
+                type="text"
+                className="form-input"
+                style={{ paddingLeft: 36, height: 38 }}
+                placeholder="Tìm theo mã, tên KH, SĐT, email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </form>
 
           {/* Status Tabs */}

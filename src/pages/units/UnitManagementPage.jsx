@@ -192,24 +192,25 @@ export function UnitManagementPage() {
       {/* Toolbar (Search & Count) */}
       <div className="table-toolbar">
         <div className="table-toolbar-left">
-          <div className="table-search-input">
-            <input
-              type="text"
-              className="form-input has-icon-left"
-              placeholder="Tìm kiếm đơn vị tính theo tên, mô tả..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <SearchIcon
-              size={16}
+          <div style={{ position: 'relative', width: '100%' }}>
+            <span
               style={{
                 position: 'absolute',
                 left: 12,
-                top: '50%',
-                transform: 'translateY(-50%)',
+                top: 11,
                 color: 'var(--color-text-muted)',
                 pointerEvents: 'none',
               }}
+            >
+              <SearchIcon size={16} />
+            </span>
+            <input
+              type="text"
+              className="form-input"
+              style={{ paddingLeft: 36, height: 38 }}
+              placeholder="Tìm kiếm đơn vị tính theo tên, mô tả..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>

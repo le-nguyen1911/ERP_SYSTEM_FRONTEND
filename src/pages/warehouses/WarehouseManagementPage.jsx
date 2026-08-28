@@ -247,24 +247,25 @@ export function WarehouseManagementPage() {
       {/* Toolbar & Filters */}
       <div className="table-toolbar">
         <div className="table-toolbar-left" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <div className="table-search-input" style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-            <input
-              type="text"
-              className="form-input has-icon-left"
-              placeholder="Tìm theo tên kho, vị trí, mô tả..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <SearchIcon
-              size={20}
+          <div style={{ position: 'relative', width: '100%' }}>
+            <span
               style={{
                 position: 'absolute',
                 left: 12,
-                top: '50%',
-                transform: 'translateY(-50%)',
+                top: 11,
                 color: 'var(--color-text-muted)',
                 pointerEvents: 'none',
               }}
+            >
+              <SearchIcon size={16} />
+            </span>
+            <input
+              type="text"
+              className="form-input"
+              style={{ paddingLeft: 36, height: 38 }}
+              placeholder="Tìm theo tên kho, vị trí, mô tả..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 

@@ -341,10 +341,22 @@ export function RoleManagementPage() {
       {/* Search & Filter Toolbar */}
       <div className="table-toolbar">
         <div className="table-toolbar-left">
-          <div className="table-search-input" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ position: 'relative', width: '100%' }}>
+            <span
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: 11,
+                color: 'var(--color-text-muted)',
+                pointerEvents: 'none',
+              }}
+            >
+              <SearchIcon size={16} />
+            </span>
             <input
               type="text"
-              className="form-input has-icon-left"
+              className="form-input"
+              style={{ paddingLeft: 36, height: 38 }}
               placeholder={
                 activeTab === 'roles'
                   ? 'Tìm kiếm vai trò theo mã, mô tả...'
@@ -352,17 +364,6 @@ export function RoleManagementPage() {
               }
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <SearchIcon
-              size={18}
-              style={{
-                position: 'absolute',
-                left: 12,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--color-text-muted)',
-                pointerEvents: 'none',
-              }}
             />
           </div>
         </div>
