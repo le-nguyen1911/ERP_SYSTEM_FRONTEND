@@ -80,6 +80,7 @@ export function PurchaseOrderManagementPage() {
   const [editPO, setEditPO]             = useState(null);
   const [detailPO, setDetailPO]         = useState(null);
   const [deletePO, setDeletePO]         = useState(null);
+  const [loadingDetailId, setLoadingDetailId] = useState(null); // id of PO being fetched for detail
 
   // ── Supplier list for filter dropdown ───────────────────────────────────
   const { data: suppliersData } = useQuery({
@@ -166,6 +167,28 @@ export function PurchaseOrderManagementPage() {
   function handleEditClick(po) {
     setEditPO(po);
     setDetailPO(null);
+  }
+
+  /**
+   * Fetch the FULL purchase order detail (with nested supplier + items)
+   * before opening the detail modal.  The list endpoint only returns a
+   * lightweight summary DTO that omits the items array and supplier object.
+   */
+  async function handleViewDetail(po) {
+    try {
+      setLoadingDetailId(po.id);
+      const res = await purchaseOrderApi.getPurchaseOrderById(po.id);
+      const full = res?.data;
+      if (full) {
+        setDetailPO(full);
+      } else {
+        toast.error('Không thể tải chi tiết đơn hàng');
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Không thể tải chi tiết đơn hàng');
+    } finally {
+      setLoadingDetailId(null);
+    }
   }
 
   function handleReset() {
@@ -324,11 +347,14 @@ export function PurchaseOrderManagementPage() {
                           {(canUpdate || canApprove) && (
                             <button
                               className="btn btn-outline btn-sm"
-                              style={{ padding: '4px 8px' }}
-                              onClick={() => setDetailPO(po)}
+                              style={{ padding: '4px 8px', minWidth: 28 }}
+                              onClick={() => handleViewDetail(po)}
+                              disabled={loadingDetailId === po.id}
                               title="Xem chi tiết"
                             >
-                              <EyeIcon size={13} />
+                              {loadingDetailId === po.id
+                                ? <span style={{ fontSize: 11 }}>...</span>
+                                : <EyeIcon size={13} />}
                             </button>
                           )}
                           {po.status === 'DRAFT' && canUpdate && (
