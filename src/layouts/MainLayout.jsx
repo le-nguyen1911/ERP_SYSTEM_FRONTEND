@@ -115,7 +115,6 @@ export function MainLayout() {
           path: '/users',
           icon: UsersIcon,
           visible: hasPermission(PERMISSIONS.USER_VIEW),
-          badge: 'Phase 2',
         },
         {
           label: 'Vai trò & Phân quyền',
@@ -141,35 +140,30 @@ export function MainLayout() {
           path: '/categories',
           icon: TagIcon,
           visible: hasPermission(PERMISSIONS.CATEGORY_VIEW),
-          badge: 'Phase 2',
         },
         {
           label: 'Đơn vị tính',
           path: '/units',
           icon: ScaleIcon,
           visible: hasPermission(PERMISSIONS.UNIT_VIEW),
-          badge: 'Phase 2',
         },
         {
           label: 'Quản lý kho',
           path: '/warehouses',
           icon: WarehouseIcon,
           visible: hasPermission(PERMISSIONS.WAREHOUSE_VIEW),
-          badge: 'Phase 2',
         },
         {
           label: 'Danh mục sản phẩm',
           path: '/products',
           icon: PackageIcon,
           visible: hasPermission(PERMISSIONS.PRODUCT_VIEW),
-          badge: 'Phase 2',
         },
         {
           label: 'Tồn kho & Điều chuyển',
           path: '/inventory',
           icon: WarehouseIcon,
           visible: hasPermission(PERMISSIONS.STOCK_VIEW),
-          badge: 'Phase 3',
         },
       ],
     },
@@ -181,7 +175,6 @@ export function MainLayout() {
           path: '/suppliers',
           icon: TruckIcon,
           visible: hasPermission(PERMISSIONS.SUPPLIER_VIEW),
-          badge: 'Phase 4',
         },
         {
           label: 'Đơn mua hàng (PO)',
@@ -200,7 +193,6 @@ export function MainLayout() {
           path: '/customers',
           icon: UsersIcon,
           visible: hasPermission(PERMISSIONS.CUSTOMER_VIEW),
-          badge: 'Phase 5',
         },
         {
           label: 'Đơn bán hàng (SO)',
@@ -213,7 +205,6 @@ export function MainLayout() {
           path: '/deliveries',
           icon: TruckIcon,
           visible: hasPermission(PERMISSIONS.DELIVERY_VIEW),
-          badge: 'Phase 5',
         },
       ],
     },
@@ -279,9 +270,8 @@ export function MainLayout() {
 
       {/* Sidebar */}
       <aside
-        className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''} ${
-          mobileMenuOpen ? 'mobile-open' : ''
-        }`}
+        className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''
+          }`}
       >
         <div className="sidebar-header">
           <Link to="/dashboard" className="sidebar-brand">
