@@ -84,9 +84,14 @@ axiosClient.interceptors.response.use(
       }
 
       try {
-        // Direct call to refresh endpoint using raw axios to avoid interceptor loop
+        // Direct call to refresh endpoint using raw axios to avoid interceptor loop.
+        // Must use an absolute URL because API_BASE_URL may be a relative path ('/api/v1')
+        // which raw axios cannot resolve correctly without the Vite proxy.
+        const ABSOLUTE_REFRESH_URL = import.meta.env.VITE_API_BASE_URL
+          ? `${import.meta.env.VITE_API_BASE_URL}/auth/refresh-token`
+          : 'http://localhost:8080/api/v1/auth/refresh-token';
         const refreshResponse = await axios.post(
-          `${API_BASE_URL}/auth/refresh-token`,
+          ABSOLUTE_REFRESH_URL,
           {},
           {
             headers: {
