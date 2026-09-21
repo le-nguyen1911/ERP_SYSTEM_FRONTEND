@@ -31,6 +31,7 @@ export function LoginPage() {
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const {
+    register,
     handleSubmit,
     formState: { errors },
   } = useForm({
