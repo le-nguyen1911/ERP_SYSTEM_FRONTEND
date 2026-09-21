@@ -94,6 +94,7 @@ export function LoginPage() {
           autoComplete="username"
           autoFocus
           error={errors.username?.message}
+          {...register('username')}
         />
 
         <Input
@@ -105,6 +106,7 @@ export function LoginPage() {
           required
           autoComplete="current-password"
           error={errors.password?.message}
+          {...register('password')}
         />
 
         <div className="auth-form-actions">
