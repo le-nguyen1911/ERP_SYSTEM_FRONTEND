@@ -31,7 +31,6 @@ export function LoginPage() {
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const {
-    register,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -95,7 +94,6 @@ export function LoginPage() {
           autoComplete="username"
           autoFocus
           error={errors.username?.message}
-          {...register('username')}
         />
 
         <Input
@@ -107,7 +105,6 @@ export function LoginPage() {
           required
           autoComplete="current-password"
           error={errors.password?.message}
-          {...register('password')}
         />
 
         <div className="auth-form-actions">
@@ -123,14 +120,7 @@ export function LoginPage() {
         </div>
       </form>
 
-      <div className="auth-card-footer">
-        <p className="text-muted text-sm">
-          Chưa có tài khoản?{' '}
-          <Link to="/register" className="auth-link font-medium">
-            Đăng ký tài khoản mới
-          </Link>
-        </p>
-      </div>
+
     </div>
   );
 }
