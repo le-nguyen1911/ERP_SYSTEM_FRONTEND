@@ -8,7 +8,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://erp-system-ld8f.onrender.com',
+        target: 'https://erp-system-api-abbe.onrender.com',
         changeOrigin: true,
         secure: false,
       },
