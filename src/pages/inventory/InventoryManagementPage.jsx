@@ -91,8 +91,17 @@ function StockStatusBadge({ lowStock, quantity, minQuantity }) {
 }
 
 // ─── Stock table shared between warehouse/product views ────────────────
-function StockTable({ stocks, canUpdate, canImport, canExport, canTransfer, onImport, onExport, onTransfer, onHistory, onMinQty }) {
+function StockTable({ stocks, canUpdate, canImport, canExport, canTransfer, onImport, onExport, onTransfer, onHistory, onMinQty, searchKeyword = '' }) {
   if (stocks.length === 0) {
+    if (searchKeyword) {
+      return (
+        <EmptyState
+          icon={SearchIcon}
+          title="Không tìm thấy sản phẩm"
+          description={`Không tìm thấy sản phẩm nào khớp với từ khóa "${searchKeyword}" trong kho này.`}
+        />
+      );
+    }
     return (
       <EmptyState
         icon={PackageIcon}
@@ -230,6 +239,10 @@ export function InventoryManagementPage() {
   const [selectedWarehouseId, setSelectedWarehouseId] = useState('');
   const [selectedProductId, setSelectedProductId] = useState('');
 
+  // Search keywords for Warehouse and Product views
+  const [warehouseSearchKeyword, setWarehouseSearchKeyword] = useState('');
+  const [productSearchKeyword, setProductSearchKeyword] = useState('');
+
   // Transfer history state
   const [transferWarehouseFilter, setTransferWarehouseFilter] = useState('');
   const [transferSearchKeyword, setTransferSearchKeyword] = useState('');
@@ -252,6 +265,13 @@ export function InventoryManagementPage() {
   const { data: productsRes, isLoading: loadingProducts } = useQuery({
     queryKey: ['products'],
     queryFn: () => productApi.getProducts({ page: 0, size: 200, sort: 'name,asc' }),
+  });
+
+  // Search products across database for Product view
+  const { data: searchedProductsRes, isLoading: loadingSearchedProducts } = useQuery({
+    queryKey: ['products-search-tab', productSearchKeyword.trim()],
+    queryFn: () => productApi.searchProducts(productSearchKeyword.trim(), { page: 0, size: 100, sort: 'name,asc' }),
+    enabled: activeView === VIEWS.PRODUCT && !!productSearchKeyword.trim(),
   });
 
   const {
@@ -299,7 +319,48 @@ export function InventoryManagementPage() {
     return Array.isArray(content) ? content : [];
   }, [productsRes]);
 
+  // Displayed products for the "Theo sản phẩm" dropdown, incorporating search results across database
+  const displayedProducts = useMemo(() => {
+    const q = productSearchKeyword.trim().toLowerCase();
+    if (!q) {
+      return products;
+    }
+
+    const serverResults = searchedProductsRes?.data?.content || searchedProductsRes?.data;
+    let list = Array.isArray(serverResults) ? serverResults : [];
+
+    // Local filter fallback while loading or if products already cached
+    if (list.length === 0 && !searchedProductsRes) {
+      list = products.filter(
+        (p) =>
+          p.name?.toLowerCase().includes(q) ||
+          p.code?.toLowerCase().includes(q)
+      );
+    }
+
+    // Keep selected product visible in options list so select element displays it correctly
+    if (selectedProductId && !list.some((p) => p.id === selectedProductId)) {
+      const currentP = products.find((p) => p.id === selectedProductId);
+      if (currentP) {
+        return [currentP, ...list];
+      }
+    }
+    return list;
+  }, [productSearchKeyword, searchedProductsRes, products, selectedProductId]);
+
   const warehouseStocks = useMemo(() => warehouseStockRes?.data || [], [warehouseStockRes]);
+
+  // Filtered warehouse stocks according to warehouseSearchKeyword
+  const filteredWarehouseStocks = useMemo(() => {
+    if (!warehouseSearchKeyword.trim()) return warehouseStocks;
+    const q = warehouseSearchKeyword.trim().toLowerCase();
+    return warehouseStocks.filter((s) => {
+      const name = s.product?.name?.toLowerCase() || '';
+      const code = s.product?.code?.toLowerCase() || '';
+      return name.includes(q) || code.includes(q);
+    });
+  }, [warehouseStocks, warehouseSearchKeyword]);
+
   const productStocks = useMemo(() => productStockRes?.data || [], [productStockRes]);
   const lowStocks = useMemo(() => lowStockRes?.data || [], [lowStockRes]);
 
@@ -511,10 +572,10 @@ export function InventoryManagementPage() {
   // ── Determine current stock list and loading state ────────────────
 
   const currentStocks = useMemo(() => {
-    if (activeView === VIEWS.WAREHOUSE) return warehouseStocks;
+    if (activeView === VIEWS.WAREHOUSE) return filteredWarehouseStocks;
     if (activeView === VIEWS.PRODUCT) return productStocks;
     return lowStocks;
-  }, [activeView, warehouseStocks, productStocks, lowStocks]);
+  }, [activeView, filteredWarehouseStocks, productStocks, lowStocks]);
 
   const isCurrentLoading =
     activeView === VIEWS.WAREHOUSE
@@ -742,7 +803,7 @@ export function InventoryManagementPage() {
       {/* Selector row for Warehouse view */}
       {activeView === VIEWS.WAREHOUSE && (
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 16, flexWrap: 'wrap' }}>
-          <div style={{ minWidth: 280 }}>
+          <div style={{ minWidth: 260, maxWidth: 320 }}>
             <select
               className="form-input"
               value={selectedWarehouseId}
@@ -758,9 +819,56 @@ export function InventoryManagementPage() {
               ))}
             </select>
           </div>
+
+          {/* Ô tìm kiếm sản phẩm trong kho đang chọn */}
+          <div style={{ position: 'relative', flex: 1, minWidth: 260, maxWidth: 380 }}>
+            <SearchIcon
+              size={15}
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'var(--color-text-muted)',
+                pointerEvents: 'none',
+              }}
+            />
+            <input
+              type="text"
+              className="form-input"
+              placeholder="Tìm tên hoặc mã sản phẩm..."
+              value={warehouseSearchKeyword}
+              onChange={(e) => setWarehouseSearchKeyword(e.target.value)}
+              disabled={!selectedWarehouseId}
+              style={{ paddingLeft: 36, paddingRight: 36, height: 40, fontSize: 13 }}
+            />
+            {warehouseSearchKeyword && (
+              <button
+                type="button"
+                onClick={() => setWarehouseSearchKeyword('')}
+                style={{
+                  position: 'absolute',
+                  right: 12,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--color-text-muted)',
+                  padding: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+                title="Xóa tìm kiếm"
+              >
+                <XIcon size={14} />
+              </button>
+            )}
+          </div>
+
           {selectedWarehouseId && (
-            <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
-              {warehouseStocks.length} dòng tồn kho
+            <span style={{ fontSize: 12, color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>
+              {filteredWarehouseStocks.length} dòng tồn kho
             </span>
           )}
         </div>
@@ -769,24 +877,83 @@ export function InventoryManagementPage() {
       {/* Selector row for Product view */}
       {activeView === VIEWS.PRODUCT && (
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 16, flexWrap: 'wrap' }}>
-          <div style={{ minWidth: 320 }}>
+          <div style={{ minWidth: 280, flex: 1, maxWidth: 420 }}>
             <select
               className="form-input"
               value={selectedProductId}
               onChange={(e) => setSelectedProductId(e.target.value)}
               style={{ height: 40, fontSize: 13 }}
-              disabled={loadingProducts}
+              disabled={loadingProducts || loadingSearchedProducts}
             >
-              <option value="">-- Chọn sản phẩm để xem tồn kho --</option>
-              {products.map((p) => (
+              <option value="">
+                {loadingSearchedProducts
+                  ? '-- Đang tìm kiếm sản phẩm... --'
+                  : productSearchKeyword.trim()
+                  ? displayedProducts.length === 0
+                    ? '-- Không tìm thấy sản phẩm --'
+                    : `-- Chọn sản phẩm (${displayedProducts.length} kết quả) --`
+                  : '-- Chọn sản phẩm để xem tồn kho --'}
+              </option>
+              {displayedProducts.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} ({p.code}){!p.active ? ' [Ngừng KD]' : ''}
                 </option>
               ))}
             </select>
           </div>
+
+          {/* Ô tìm kiếm lọc sản phẩm */}
+          <div style={{ position: 'relative', flex: 1, minWidth: 260, maxWidth: 380 }}>
+            <SearchIcon
+              size={15}
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'var(--color-text-muted)',
+                pointerEvents: 'none',
+              }}
+            />
+            <input
+              type="text"
+              className="form-input"
+              placeholder="Tìm tên hoặc mã sản phẩm..."
+              value={productSearchKeyword}
+              onChange={(e) => setProductSearchKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && displayedProducts.length > 0) {
+                  setSelectedProductId(displayedProducts[0].id);
+                }
+              }}
+              style={{ paddingLeft: 36, paddingRight: 36, height: 40, fontSize: 13 }}
+            />
+            {productSearchKeyword && (
+              <button
+                type="button"
+                onClick={() => setProductSearchKeyword('')}
+                style={{
+                  position: 'absolute',
+                  right: 12,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--color-text-muted)',
+                  padding: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+                title="Xóa tìm kiếm"
+              >
+                <XIcon size={14} />
+              </button>
+            )}
+          </div>
+
           {selectedProductId && (
-            <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
+            <span style={{ fontSize: 12, color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>
               {productStocks.length} kho chứa sản phẩm này
             </span>
           )}
@@ -1056,6 +1223,7 @@ export function InventoryManagementPage() {
             onTransfer={handleTransfer}
             onHistory={handleHistory}
             onMinQty={handleMinQty}
+            searchKeyword={activeView === VIEWS.WAREHOUSE ? warehouseSearchKeyword : ''}
           />
         )}
       </div>
