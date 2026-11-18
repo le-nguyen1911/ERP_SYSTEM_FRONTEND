@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { authApi } from '../../api/authApi';
 import { useAuthStore } from '../../stores/useAuthStore';
 import { toast } from '../../stores/useToastStore';

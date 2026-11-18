@@ -1,11 +1,18 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { stockApi } from '../../../api/stockApi';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { LoadingState } from '../../../components/feedback/LoadingState';
 import { EmptyState } from '../../../components/feedback/EmptyState';
-import { HistoryIcon, ArrowDownIcon, ArrowUpIcon, ChevronLeftIcon, ChevronRightIcon } from '../../../components/ui/Icons';
+import {
+  HistoryIcon,
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ArrowRightLeftIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from '../../../components/ui/Icons';
 
 const PAGE_SIZE = 10;
 
@@ -26,16 +33,26 @@ function formatDateTime(str) {
 export function StockHistoryModal({ isOpen, onClose, stockRecord }) {
   const [page, setPage] = useState(0);
 
+  const warehouseId = stockRecord?.warehouse?.id;
+  const productId = stockRecord?.product?.id;
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['stock-history', stockRecord?.id, page],
-    queryFn: () => stockApi.getStockHistory(stockRecord.id, { page, size: PAGE_SIZE, sort: 'createdAt,desc' }),
-    enabled: isOpen && !!stockRecord?.id,
+    queryKey: ['stock-history', warehouseId, productId, page],
+    queryFn: () => stockApi.getStockHistory(warehouseId, { page, size: PAGE_SIZE, sort: 'createdAt,desc' }),
+    enabled: isOpen && !!warehouseId,
   });
 
   const pageData = data?.data;
-  const transactions = pageData?.content || [];
+
+  // Filter transactions for this specific product if product is defined
+  const transactions = useMemo(() => {
+    const list = pageData?.content || [];
+    if (!productId) return list;
+    return list.filter((tx) => tx.product?.id === productId);
+  }, [pageData?.content, productId]);
+
   const totalPages = pageData?.totalPages || 0;
-  const totalElements = pageData?.totalElements || 0;
+  const totalElements = pageData?.totalElements || transactions.length;
 
   if (!stockRecord) return null;
 
@@ -46,7 +63,7 @@ export function StockHistoryModal({ isOpen, onClose, stockRecord }) {
       title={
         <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <HistoryIcon size={18} />
-          Lịch sử giao dịch
+          Lịch sử giao dịch tồn kho
         </span>
       }
       size="lg"
@@ -54,7 +71,7 @@ export function StockHistoryModal({ isOpen, onClose, stockRecord }) {
       {/* Stock record info */}
       <div
         style={{
-          padding: '10px 14px',
+          padding: '12px 16px',
           backgroundColor: '#f8fafc',
           borderRadius: 'var(--radius-md)',
           border: '1px solid var(--color-border)',
@@ -63,31 +80,40 @@ export function StockHistoryModal({ isOpen, onClose, stockRecord }) {
           display: 'flex',
           gap: 16,
           flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        <span>
-          <strong>Sản phẩm:</strong> {stockRecord.product?.name} ({stockRecord.product?.code})
-        </span>
-        <span>
-          <strong>Kho:</strong> {stockRecord.warehouse?.name}
-        </span>
-        <span>
-          <strong>Tồn hiện tại:</strong>{' '}
-          <span style={{ color: 'var(--color-primary)', fontWeight: 700 }}>
-            {stockRecord.quantity}
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          <span>
+            <strong>Sản phẩm:</strong> {stockRecord.product?.name}{' '}
+            <span style={{ color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>
+              ({stockRecord.product?.code})
+            </span>
           </span>
-        </span>
-        <span style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>
-          {totalElements} giao dịch
-        </span>
+          <span>
+            <strong>Kho:</strong> {stockRecord.warehouse?.name}
+          </span>
+        </div>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <span>
+            <strong>Tồn hiện tại:</strong>{' '}
+            <span style={{ color: 'var(--color-primary)', fontWeight: 700, fontSize: 15 }}>
+              {stockRecord.quantity} {stockRecord.product?.unit?.name || ''}
+            </span>
+          </span>
+          <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
+            ({totalElements} giao dịch)
+          </span>
+        </div>
       </div>
 
       {/* Table */}
       {isLoading ? (
-        <LoadingState message="Đang tải lịch sử..." minHeight="150px" />
+        <LoadingState message="Đang tải lịch sử giao dịch..." minHeight="150px" />
       ) : isError ? (
         <div style={{ textAlign: 'center', padding: 24, color: 'var(--color-danger)' }}>
-          Không thể tải lịch sử giao dịch.
+          Không thể tải lịch sử giao dịch. Vui lòng thử lại.
         </div>
       ) : transactions.length === 0 ? (
         <EmptyState
@@ -101,71 +127,87 @@ export function StockHistoryModal({ isOpen, onClose, stockRecord }) {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th style={{ width: '10%' }}>Loại</th>
-                  <th style={{ width: '10%', textAlign: 'right' }}>Số lượng</th>
+                  <th style={{ width: '14%' }}>Loại</th>
+                  <th style={{ width: '12%', textAlign: 'right' }}>Số lượng</th>
                   <th style={{ width: '16%', textAlign: 'right' }}>Đơn giá</th>
-                  <th style={{ width: '30%' }}>Ghi chú</th>
-                  <th style={{ width: '16%' }}>Người thực hiện</th>
-                  <th style={{ width: '18%' }}>Thời gian</th>
+                  <th style={{ width: '28%' }}>Ghi chú</th>
+                  <th style={{ width: '14%' }}>Người thực hiện</th>
+                  <th style={{ width: '16%' }}>Thời gian</th>
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((tx) => (
-                  <tr key={tx.id}>
-                    <td>
-                      {tx.type === 'IMPORT' ? (
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 4,
-                            color: 'var(--color-success)',
-                            fontWeight: 600,
-                            fontSize: 12,
-                          }}
-                        >
-                          <ArrowDownIcon size={13} /> Nhập
-                        </span>
-                      ) : (
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 4,
-                            color: 'var(--color-danger)',
-                            fontWeight: 600,
-                            fontSize: 12,
-                          }}
-                        >
-                          <ArrowUpIcon size={13} /> Xuất
-                        </span>
-                      )}
-                    </td>
-                    <td style={{ textAlign: 'right', fontWeight: 700, fontSize: 13 }}>
-                      {tx.type === 'IMPORT' ? '+' : '-'}{tx.quantity}
-                    </td>
-                    <td style={{ textAlign: 'right', fontSize: 13 }}>{formatVND(tx.unitPrice)}</td>
-                    <td
-                      style={{
-                        fontSize: 12,
-                        color: 'var(--color-text-secondary)',
-                        maxWidth: 240,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                      title={tx.note || ''}
-                    >
-                      {tx.note || '—'}
-                    </td>
-                    <td style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
-                      {tx.createdBy}
-                    </td>
-                    <td style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
-                      {formatDateTime(tx.createdAt)}
-                    </td>
-                  </tr>
-                ))}
+                {transactions.map((tx) => {
+                  const isTransfer = tx.note && (tx.note.includes('TRF-') || tx.note.toLowerCase().includes('điều chuyển'));
+                  return (
+                    <tr key={tx.id}>
+                      <td>
+                        {isTransfer ? (
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              color: 'var(--color-primary)',
+                              fontWeight: 600,
+                              fontSize: 12,
+                            }}
+                          >
+                            <ArrowRightLeftIcon size={13} /> Điều chuyển ({tx.type === 'IMPORT' ? 'Nhập' : 'Xuất'})
+                          </span>
+                        ) : tx.type === 'IMPORT' ? (
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              color: 'var(--color-success)',
+                              fontWeight: 600,
+                              fontSize: 12,
+                            }}
+                          >
+                            <ArrowDownIcon size={13} /> Nhập kho
+                          </span>
+                        ) : (
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              color: 'var(--color-danger)',
+                              fontWeight: 600,
+                              fontSize: 12,
+                            }}
+                          >
+                            <ArrowUpIcon size={13} /> Xuất kho
+                          </span>
+                        )}
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: 700, fontSize: 13 }}>
+                        {tx.type === 'IMPORT' ? '+' : '-'}{tx.quantity}
+                      </td>
+                      <td style={{ textAlign: 'right', fontSize: 13 }}>{formatVND(tx.unitPrice)}</td>
+                      <td
+                        style={{
+                          fontSize: 12,
+                          color: 'var(--color-text-secondary)',
+                          maxWidth: 240,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                        title={tx.note || ''}
+                      >
+                        {tx.note || '—'}
+                      </td>
+                      <td style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
+                        {tx.createdBy}
+                      </td>
+                      <td style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
+                        {formatDateTime(tx.createdAt)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
