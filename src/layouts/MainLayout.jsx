@@ -471,7 +471,7 @@ export function MainLayout() {
                     <div className="dropdown-user-email">{user?.email}</div>
                     <div className="dropdown-roles">
                       {user?.roles?.map((r) => (
-                        <Badge key={r} variant={r === ROLES.ADMIN ? 'danger' : r === ROLES.MANAGER ? 'warning' : 'primary'} size="xs">
+                        <Badge key={r} variant={r === ROLES.SUPER_ADMIN || r === ROLES.ADMIN ? 'danger' : r === ROLES.MANAGER ? 'warning' : 'primary'} size="xs">
                           {r}
                         </Badge>
                       ))}

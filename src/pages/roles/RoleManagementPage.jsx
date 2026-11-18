@@ -35,10 +35,10 @@ import { groupPermissionsByModule, MODULE_CONFIG } from '../../utils/permissionG
 
 export function RoleManagementPage() {
   const queryClient = useQueryClient();
-  const { hasRole, hasPermission, isAdmin } = usePermission();
+  const { hasRole, hasPermission, isAdmin, isSuperAdmin } = usePermission();
 
-  // Admin access check
-  const canManageRoles = hasRole(ROLES.ADMIN) || isAdmin;
+  // Admin / SuperAdmin access check
+  const canManageRoles = hasRole(ROLES.SUPER_ADMIN) || isSuperAdmin || hasRole(ROLES.ADMIN) || isAdmin;
   const canCreateRole = canManageRoles || hasPermission(PERMISSIONS.USER_CREATE);
   const canUpdateRole = canManageRoles || hasPermission(PERMISSIONS.USER_UPDATE);
   const canDeleteRole = canManageRoles || hasPermission(PERMISSIONS.USER_DELETE);
@@ -79,7 +79,14 @@ export function RoleManagementPage() {
     queryFn: () => permissionApi.getPermissions(),
   });
 
-  const rolesList = useMemo(() => rolesResponse?.data || [], [rolesResponse?.data]);
+  const rolesList = useMemo(() => {
+    const list = rolesResponse?.data || [];
+    // Frontend safety net: hide SUPER_ADMIN from non-SUPER_ADMIN viewers
+    if (!isSuperAdmin) {
+      return list.filter((r) => r.name !== ROLES.SUPER_ADMIN);
+    }
+    return list;
+  }, [rolesResponse?.data, isSuperAdmin]);
   const permissionsList = useMemo(() => permissionsResponse?.data || [], [permissionsResponse?.data]);
 
   // Filtered Roles
@@ -202,7 +209,11 @@ export function RoleManagementPage() {
   };
 
   const handleOpenDeleteRole = (role) => {
-    if (role.name === 'ADMIN') {
+    if (role.name === ROLES.SUPER_ADMIN) {
+      toast.error('Không thể xóa vai trò quản trị tối cao SUPER_ADMIN');
+      return;
+    }
+    if (role.name === ROLES.ADMIN) {
       toast.error('Không thể xóa vai trò quản trị hệ thống ADMIN');
       return;
     }
@@ -429,7 +440,9 @@ export function RoleManagementPage() {
               <tbody>
                 {filteredRoles.map((role) => {
                   const permCount = role.permissions?.length || 0;
-                  const isAdminRole = role.name === 'ADMIN';
+                  const isSuperAdminRole = role.name === ROLES.SUPER_ADMIN;
+                  const isAdminRole = role.name === ROLES.ADMIN;
+                  const isProtectedSystemRole = isSuperAdminRole || isAdminRole;
 
                   return (
                     <tr key={role.id}>
@@ -440,8 +453,16 @@ export function RoleManagementPage() {
                               width: 34,
                               height: 34,
                               borderRadius: 'var(--radius-md)',
-                              backgroundColor: isAdminRole ? '#fef3c7' : 'var(--color-primary-light)',
-                              color: isAdminRole ? '#d97706' : 'var(--color-primary)',
+                              backgroundColor: isSuperAdminRole
+                                ? '#fee2e2'
+                                : isAdminRole
+                                ? '#fef3c7'
+                                : 'var(--color-primary-light)',
+                              color: isSuperAdminRole
+                                ? '#dc2626'
+                                : isAdminRole
+                                ? '#d97706'
+                                : 'var(--color-primary)',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -454,6 +475,23 @@ export function RoleManagementPage() {
                             <span style={{ fontWeight: 700, color: 'var(--color-text-main)' }}>
                               {role.name}
                             </span>
+                            {isSuperAdminRole && (
+                              <span
+                                style={{
+                                  display: 'inline-block',
+                                  marginLeft: 8,
+                                  fontSize: 10,
+                                  fontWeight: 700,
+                                  padding: '1px 6px',
+                                  borderRadius: 4,
+                                  backgroundColor: '#fee2e2',
+                                  color: '#dc2626',
+                                  border: '1px solid #fecaca',
+                                }}
+                              >
+                                Tối cao
+                              </span>
+                            )}
                             {isAdminRole && (
                               <span
                                 style={{
@@ -551,7 +589,7 @@ export function RoleManagementPage() {
                             </>
                           )}
 
-                          {canDeleteRole && !isAdminRole && (
+                          {canDeleteRole && !isProtectedSystemRole && (
                             <button
                               type="button"
                               className="btn btn-outline-danger btn-sm"

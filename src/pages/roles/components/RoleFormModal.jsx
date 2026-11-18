@@ -6,6 +6,7 @@ import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { ShieldIcon, FileTextIcon } from '../../../components/ui/Icons';
+import { toast } from '../../../stores/useToastStore';
 import { groupPermissionsByModule, MODULE_CONFIG } from '../../../utils/permissionGrouping';
 
 const roleSchema = z.object({
@@ -67,8 +68,13 @@ function RoleForm({ initialData, allPermissions = [], onSubmit, onClose, isLoadi
   };
 
   const handleFormSubmit = async (data) => {
+    const roleName = data.name.trim().toUpperCase();
+    if (!isEdit && roleName === 'SUPER_ADMIN') {
+      toast.error('Không được phép tạo vai trò SUPER_ADMIN');
+      return;
+    }
     await onSubmit({
-      name: data.name.trim().toUpperCase(),
+      name: roleName,
       description: data.description ? data.description.trim() : null,
       permissions: Array.from(selectedPermissions),
     });
@@ -83,8 +89,8 @@ function RoleForm({ initialData, allPermissions = [], onSubmit, onClose, isLoadi
         error={errors.name?.message}
         required
         autoFocus={!isEdit}
-        disabled={isEdit && initialData?.name === 'ADMIN'}
-        helperText={isEdit && initialData?.name === 'ADMIN' ? 'Vai trò quản trị tối cao không thể đổi tên' : 'Định dạng viết hoa, không dấu cách (VD: INVENTORY_MANAGER)'}
+        disabled={isEdit && (initialData?.name === 'ADMIN' || initialData?.name === 'SUPER_ADMIN')}
+        helperText={isEdit && (initialData?.name === 'ADMIN' || initialData?.name === 'SUPER_ADMIN') ? 'Vai trò quản trị hệ thống không thể đổi tên' : 'Định dạng viết hoa, không dấu cách (VD: INVENTORY_MANAGER)'}
         {...register('name')}
         onChange={(e) => {
           setValue('name', e.target.value.toUpperCase());

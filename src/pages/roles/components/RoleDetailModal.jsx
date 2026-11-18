@@ -53,8 +53,11 @@ export function RoleDetailModal({
               <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text-main)', margin: 0 }}>
                 {role.name}
               </h3>
+              {role.name === 'SUPER_ADMIN' && (
+                <span className="badge badge-danger" style={{ backgroundColor: '#fee2e2', color: '#dc2626', border: '1px solid #fecaca' }}>Quản trị tối cao</span>
+              )}
               {role.name === 'ADMIN' && (
-                <span className="badge badge-primary">Quản trị tối cao</span>
+                <span className="badge badge-primary">Quản trị hệ thống</span>
               )}
             </div>
             <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
@@ -268,7 +271,7 @@ export function RoleDetailModal({
                   </Button>
                 </>
               )}
-              {canDelete && role.name !== 'ADMIN' && (
+              {canDelete && role.name !== 'ADMIN' && role.name !== 'SUPER_ADMIN' && (
                 <Button
                   variant="outline-danger"
                   size="sm"

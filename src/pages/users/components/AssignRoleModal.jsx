@@ -50,6 +50,7 @@ function AssignRoleForm({ user, allRoles = [], onSubmit, onClose, isLoading }) {
   };
 
   const getRoleVariant = (roleName) => {
+    if (roleName === ROLES.SUPER_ADMIN) return 'danger';
     if (roleName === ROLES.ADMIN) return 'danger';
     if (roleName === ROLES.MANAGER) return 'warning';
     return 'primary';

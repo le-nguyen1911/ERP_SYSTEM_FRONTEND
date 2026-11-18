@@ -8,16 +8,18 @@ export function usePermission() {
   const { roles, permissions, isAuthenticated, user } = useAuthStore();
 
   const isSuperAdmin = roles?.includes(ROLES.SUPER_ADMIN) || false;
-  const isAdmin = roles?.includes(ROLES.ADMIN) || false;
+  const isAdmin = isSuperAdmin || roles?.includes(ROLES.ADMIN) || false;
   const isManager = roles?.includes(ROLES.MANAGER) || false;
 
   const hasRole = (roleName) => {
     if (!isAuthenticated || !roles) return false;
+    if (isSuperAdmin) return true;
     return roles.includes(roleName);
   };
 
   const hasAnyRole = (roleNames = []) => {
     if (!isAuthenticated || !roles) return false;
+    if (isSuperAdmin) return true;
     return roleNames.some((r) => roles.includes(r));
   };
 

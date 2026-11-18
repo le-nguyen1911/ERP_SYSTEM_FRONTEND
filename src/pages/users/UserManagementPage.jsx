@@ -77,13 +77,20 @@ export function UserManagementPage() {
   const { data: rolesApiResponse } = useQuery({
     queryKey: ['roles'],
     queryFn: () => userApi.getRoles(),
-    enabled: isAdmin,
+    enabled: isAdmin || isSuperAdmin,
   });
 
   const pageData = usersApiResponse?.data;
   const totalPages = pageData?.totalPages || 0;
   const totalElements = pageData?.totalElements || 0;
-  const allRoles = rolesApiResponse?.data || [];
+  const allRoles = useMemo(() => {
+    const list = rolesApiResponse?.data || [];
+    // Hide SUPER_ADMIN role option from non-SUPER_ADMIN viewers
+    if (!isSuperAdmin) {
+      return list.filter((r) => r.name !== ROLES.SUPER_ADMIN);
+    }
+    return list;
+  }, [rolesApiResponse?.data, isSuperAdmin]);
 
   // Filter users by search term and role on the current page
   // Backend already filters out SUPER_ADMIN users for non-SUPER_ADMIN callers.
@@ -220,6 +227,7 @@ export function UserManagementPage() {
   };
 
   const getRoleVariant = (roleName) => {
+    if (roleName === ROLES.SUPER_ADMIN) return 'danger';
     if (roleName === ROLES.ADMIN) return 'danger';
     if (roleName === ROLES.MANAGER) return 'warning';
     return 'primary';
@@ -294,6 +302,7 @@ export function UserManagementPage() {
             style={{ height: 36 }}
           >
             <option value="ALL">Tất cả vai trò</option>
+            {isSuperAdmin && <option value={ROLES.SUPER_ADMIN}>SUPER_ADMIN</option>}
             <option value={ROLES.ADMIN}>ADMIN</option>
             <option value={ROLES.MANAGER}>MANAGER</option>
             <option value={ROLES.USER}>USER</option>
@@ -454,7 +463,7 @@ export function UserManagementPage() {
                             </button>
                           )}
 
-                          {isAdmin && (
+                          {(isAdmin || isSuperAdmin) && (
                             <>
                               <button
                                 type="button"
@@ -560,7 +569,7 @@ export function UserManagementPage() {
         onEdit={handleOpenEdit}
         onAssignRole={handleOpenAssignRole}
         onToggleLock={handleOpenToggleLock}
-        isAdmin={isAdmin}
+        isAdmin={isAdmin || isSuperAdmin}
         canUpdate={canUpdate}
       />
 

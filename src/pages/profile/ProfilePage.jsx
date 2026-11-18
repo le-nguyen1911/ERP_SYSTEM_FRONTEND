@@ -100,7 +100,7 @@ export function ProfilePage() {
                 {user?.roles?.map((r) => (
                   <Badge
                     key={r}
-                    variant={r === ROLES.ADMIN ? 'danger' : r === ROLES.MANAGER ? 'warning' : 'primary'}
+                    variant={r === ROLES.SUPER_ADMIN || r === ROLES.ADMIN ? 'danger' : r === ROLES.MANAGER ? 'warning' : 'primary'}
                   >
                     Vai trò: {r}
                   </Badge>
