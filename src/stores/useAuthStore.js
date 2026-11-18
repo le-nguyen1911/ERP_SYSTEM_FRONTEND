@@ -5,8 +5,8 @@ function computePermissions(roles = []) {
   const permSet = new Set();
   if (!roles || !Array.isArray(roles)) return [];
 
-  // If ADMIN, grant all permissions
-  if (roles.includes(ROLES.ADMIN)) {
+  // If SUPER_ADMIN or ADMIN, grant all permissions
+  if (roles.includes(ROLES.SUPER_ADMIN) || roles.includes(ROLES.ADMIN)) {
     return ROLE_PERMISSIONS[ROLES.ADMIN] || [];
   }
 

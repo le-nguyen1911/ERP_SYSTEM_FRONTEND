@@ -7,6 +7,10 @@ import { ROLES } from '../utils/constants';
 export function usePermission() {
   const { roles, permissions, isAuthenticated, user } = useAuthStore();
 
+  const isSuperAdmin = roles?.includes(ROLES.SUPER_ADMIN) || false;
+  const isAdmin = roles?.includes(ROLES.ADMIN) || false;
+  const isManager = roles?.includes(ROLES.MANAGER) || false;
+
   const hasRole = (roleName) => {
     if (!isAuthenticated || !roles) return false;
     return roles.includes(roleName);
@@ -19,31 +23,29 @@ export function usePermission() {
 
   const hasPermission = (permissionName) => {
     if (!isAuthenticated) return false;
-    // ADMIN has all permissions
-    if (roles?.includes(ROLES.ADMIN)) return true;
+    // SUPER_ADMIN and ADMIN have all permissions
+    if (isSuperAdmin || isAdmin) return true;
     return permissions?.includes(permissionName) || false;
   };
 
   const hasAnyPermission = (permissionNames = []) => {
     if (!isAuthenticated) return false;
-    if (roles?.includes(ROLES.ADMIN)) return true;
+    if (isSuperAdmin || isAdmin) return true;
     return permissionNames.some((p) => permissions?.includes(p));
   };
 
   const hasAllPermissions = (permissionNames = []) => {
     if (!isAuthenticated) return false;
-    if (roles?.includes(ROLES.ADMIN)) return true;
+    if (isSuperAdmin || isAdmin) return true;
     return permissionNames.every((p) => permissions?.includes(p));
   };
-
-  const isAdmin = roles?.includes(ROLES.ADMIN) || false;
-  const isManager = roles?.includes(ROLES.MANAGER) || false;
 
   return {
     roles,
     permissions,
     isAuthenticated,
     user,
+    isSuperAdmin,
     isAdmin,
     isManager,
     hasRole,
@@ -53,3 +55,4 @@ export function usePermission() {
     hasAllPermissions,
   };
 }
+

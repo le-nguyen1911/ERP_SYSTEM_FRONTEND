@@ -12,6 +12,7 @@ export const STORAGE_KEYS = {
 };
 
 export const ROLES = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
   MANAGER: 'MANAGER',
   USER: 'USER',
@@ -94,6 +95,7 @@ export const PERMISSIONS = {
 
 // Map predefined roles to their permissions based on DataInitializer.java
 export const ROLE_PERMISSIONS = {
+  [ROLES.SUPER_ADMIN]: Object.values(PERMISSIONS),
   [ROLES.USER]: [
     PERMISSIONS.CATEGORY_VIEW,
     PERMISSIONS.UNIT_VIEW,

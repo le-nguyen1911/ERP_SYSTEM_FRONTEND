@@ -36,12 +36,12 @@ import { UserPagination } from './components/UserPagination';
 
 export function UserManagementPage() {
   const queryClient = useQueryClient();
-  const { hasPermission, isAdmin } = usePermission();
+  const { hasPermission, isAdmin, isSuperAdmin } = usePermission();
 
   // RBAC Permission flags
-  const canCreate = hasPermission(PERMISSIONS.USER_CREATE) || isAdmin;
-  const canUpdate = hasPermission(PERMISSIONS.USER_UPDATE) || isAdmin;
-  const canDelete = hasPermission(PERMISSIONS.USER_DELETE) || isAdmin;
+  const canCreate = hasPermission(PERMISSIONS.USER_CREATE) || isAdmin || isSuperAdmin;
+  const canUpdate = hasPermission(PERMISSIONS.USER_UPDATE) || isAdmin || isSuperAdmin;
+  const canDelete = hasPermission(PERMISSIONS.USER_DELETE) || isAdmin || isSuperAdmin;
 
   // Pagination & Filtering state
   const [page, setPage] = useState(0);
@@ -86,9 +86,15 @@ export function UserManagementPage() {
   const allRoles = rolesApiResponse?.data || [];
 
   // Filter users by search term and role on the current page
+  // Backend already filters out SUPER_ADMIN users for non-SUPER_ADMIN callers.
+  // We additionally hide SUPER_ADMIN users client-side as a UI safety net.
   const filteredUsers = useMemo(() => {
     const list = usersApiResponse?.data?.content || [];
     return list.filter((user) => {
+      // Frontend safety net: hide SUPER_ADMIN accounts from non-SUPER_ADMIN viewers
+      const userRoles = user.roles ? Array.from(user.roles) : [];
+      if (!isSuperAdmin && userRoles.includes(ROLES.SUPER_ADMIN)) return false;
+
       const matchSearch =
         !searchTerm.trim() ||
         user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -101,7 +107,7 @@ export function UserManagementPage() {
 
       return matchSearch && matchRole;
     });
-  }, [usersApiResponse?.data?.content, searchTerm, roleFilter]);
+  }, [usersApiResponse?.data?.content, searchTerm, roleFilter, isSuperAdmin]);
 
   // Mutations
   // Create User Mutation
