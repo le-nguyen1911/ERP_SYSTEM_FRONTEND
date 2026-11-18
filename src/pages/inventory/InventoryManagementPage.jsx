@@ -821,7 +821,7 @@ export function InventoryManagementPage() {
           </div>
 
           {/* Ô tìm kiếm sản phẩm trong kho đang chọn */}
-          <div style={{ position: 'relative', display: 'flex',flex: 1, minWidth: 260, maxWidth: 380 }}>
+          <div style={{ position: 'relative', display: 'flex',flex: 1,alignItems: 'center', minWidth: 260, maxWidth: 380 }}>
             <SearchIcon
               size={15}
               style={{
@@ -903,7 +903,7 @@ export function InventoryManagementPage() {
           </div>
 
           {/* Ô tìm kiếm lọc sản phẩm */}
-          <div style={{ position: 'relative', flex: 1,display: 'flex', minWidth: 260, maxWidth: 380 }}>
+          <div style={{ position: 'relative', flex: 1,display: 'flex',alignItems: 'center', minWidth: 260, maxWidth: 380 }}>
             <SearchIcon
               size={15}
               style={{
@@ -982,7 +982,7 @@ export function InventoryManagementPage() {
             </select>
           </div>
 
-          <div style={{ position: 'relative', flex: 1,display: 'flex', minWidth: 280 }}>
+          <div style={{ position: 'relative', flex: 1,display: 'flex', alignItems: 'center', minWidth: 280 }}>
             <SearchIcon
               size={15}
               style={{
